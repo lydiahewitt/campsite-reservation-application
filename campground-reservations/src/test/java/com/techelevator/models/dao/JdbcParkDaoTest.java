@@ -39,4 +39,8 @@ public class JdbcParkDaoTest extends DAOIntegrationTest
         assertEquals(message, expected.getDescription(), actual.getDescription());
 
     }
+
+    public void insertPark_should_saveParkToDatabase(){
+
+    }
 }
