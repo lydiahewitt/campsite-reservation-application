@@ -1,4 +1,4 @@
-package com.techelevator;
+package com.techelevator.models.dao;
 
 import java.sql.SQLException;
 
