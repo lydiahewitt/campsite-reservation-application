@@ -2,6 +2,7 @@ package com.techelevator.views;
 
 import com.techelevator.models.dto.Park;
 import com.techelevator.models.dto.Campground;
+import com.techelevator.models.dto.Reservation;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -121,4 +122,87 @@ public class UserInterface
         return in.nextLine().trim();
     }
 
+    public static void displayCampgroundDetails(Campground campground){
+
+        System.out.println();
+        System.out.println("Name: " + campground.getName());
+        System.out.println("------------------------------------");
+        System.out.println("Open Month: " + monthConverter(campground.getOpenFromDate()));
+        System.out.println("Closing Month: " + monthConverter(campground.getOpenToDate()));
+        System.out.println("Daily Fee: " + campground.getDailyFee());
+        System.out.println();
+    }
+
+    public static String monthConverter(String num){
+        String month = "";
+
+        if (num.equals("01")){
+            return "January";
+        } else if (num.equals("02")){
+            return "February";
+        }else if (num.equals("03")){
+            return "March";
+        } else if (num.equals("04")){
+            return "April";
+        }else if (num.equals("05")){
+            return "May";
+        }else if (num.equals("06")){
+            return "June";
+        }else if (num.equals("07")){
+            return "July";
+        }else if (num.equals("08")){
+            return "August";
+        }else if (num.equals("09")){
+            return "September";
+        }else if (num.equals("10")){
+            return "October";
+        }else if (num.equals("11")){
+            return "November";
+        }else if (num.equals("12")){
+            return "December";
+        }
+        return month;
+    }
+
+    public static String getUserName(){
+        System.out.println();
+        System.out.println("Please enter name: ");
+
+        Scanner in = new Scanner(System.in);
+        String name = in.nextLine();
+
+        return name;
+    }
+
+    public static String getStartDate(){
+        System.out.println();
+        System.out.println("Please enter start date (YYYY-MM-DD): ");
+
+
+        Scanner in = new Scanner(System.in);
+        String date = in.nextLine();
+
+        return date;
+    }
+
+    public static String getToDate(){
+        System.out.println();
+        System.out.println("Please enter to date (YYYY-MM-DD): ");
+
+
+        Scanner in = new Scanner(System.in);
+        String date = in.nextLine();
+
+        return date;
+    }
+
+    public static void displayAvailableSites(List<Reservation> reservations){
+
+        for (Reservation reservation: reservations){
+            System.out.println();
+            System.out.println("List of available sites");
+            System.out.println("------------------------------------");
+            System.out.println();
+        }
+    }
 }

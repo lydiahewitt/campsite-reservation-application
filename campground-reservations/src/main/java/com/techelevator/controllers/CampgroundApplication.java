@@ -4,9 +4,12 @@ import com.techelevator.models.dao.*;
 import com.techelevator.models.dto.Campground;
 import com.techelevator.models.dto.Park;
 import com.techelevator.views.UserInterface;
+import com.techelevator.models.dao.ReservationDao;
 //import org.graalvm.compiler.lir.LIRInstruction;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class CampgroundApplication
@@ -44,6 +47,14 @@ public class CampgroundApplication
             if (choice.equalsIgnoreCase("Y")) {
                 List<Campground> campgrounds = campgroundDao.getCampgroundsByParkId(parkId);
                 String chosenCampground = UserInterface.displayAllCampgrounds(campgrounds);
+
+                int campgroundId = Integer.parseInt(chosenCampground);
+                displayCampDetails(campgroundId);
+
+                //start reservation setup
+                handleReservation(parkId, campgroundId);
+
+
             } return;
 
         }
@@ -57,5 +68,29 @@ public class CampgroundApplication
         return chosenPark;
     }
 
+    private Campground displayCampDetails(int campId){
+        Campground campground = campgroundDao.getCampgroundById(campId);
+        UserInterface.displayCampgroundDetails(campground);
+        return campground;
+    }
+
+    private static void handleReservation(int parkId, int campgroundId){
+
+        String name = UserInterface.getUserName();
+
+        String startString = UserInterface.getStartDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate startDate = LocalDate.parse(startString,formatter);
+
+        String toString = UserInterface.getToDate();
+        formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        LocalDate toDate = LocalDate.parse(toString,formatter);
+
+       // List<ReservationDao> available = ReservationDao.c
+        // LEFT OFF HERE
+
+
+
+    }
 
 }

@@ -37,6 +37,27 @@ public class JdbcCampgroundDao implements CampgroundDao {
         return campgrounds;
     }
 
+    public Campground getCampgroundById(int campgroundId){
+
+        Campground campground = null;
+
+        String sql = "SELECT c.campground_id, " +
+                "c.park_id ," +
+                "c.name ," +
+                "c.open_from_mm, " +
+                "c.open_to_mm, " +
+                "c.daily_fee " +
+                "FROM park p\n" +
+                "JOIN campground c on p.park_id = c.park_id\n" +
+                "WHERE p.park_id = ?;";
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, campgroundId);
+
+        if(results.next()){
+            campground = mapRowToCampground(results);
+        }
+        return campground;
+    }
 
     public Campground mapRowToCampground(SqlRowSet rowset) {
         Campground campground = new Campground();
@@ -48,5 +69,4 @@ public class JdbcCampgroundDao implements CampgroundDao {
         campground.setDailyFee(rowset.getBigDecimal("daily_fee"));
         return campground;
     }
-
 }

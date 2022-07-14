@@ -1,8 +1,12 @@
 package com.techelevator.models.dao;
 
+import com.techelevator.models.dto.Reservation;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JdbcReservationDao implements ReservationDao {
 
@@ -13,7 +17,56 @@ public class JdbcReservationDao implements ReservationDao {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void createReservation(String parkId) {
 
+    public List<Reservation> createReservation(int parkId, int campgroundId, String fromDate, String toDate) {
+
+        List<Reservation> currentReservations = new ArrayList<>();
+        List<Reservation> availableReservations = new ArrayList<>();
+
+        String sql = "SELECT r.reservation_id, p.park_id, c.campground_id, s.site_id, r.from_date, r.to_date, c.daily_fee\n" +
+                "FROM reservation r\n" +
+                "JOIN site s ON s.site_id = r.site_id\n" +
+                "JOIN campground c ON c.campground_id = s.campground_id\n" +
+                "JOIN park p ON p.park_id = c.park_id\n" +
+                "WHERE p.park_id = ? AND c.campground_id = ?\n" +
+                "  AND ((from_date <= ? AND to_date >= ?) OR (from_date <= ? AND to_date >= ?));";
+
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, parkId, campgroundId, fromDate, fromDate, toDate, toDate);
+
+        while (result.next()){
+            currentReservations.add(mapRowToReservation(result));
+        }
+
+        String nextsql = "SELECT r.reservation_id, p.park_id, c.campground_id, s.site_id, r.from_date, r.to_date, c.daily_fee\n" +
+                "FROM reservation r\n" +
+                "JOIN site s ON s.site_id = r.site_id\n" +
+                "JOIN campground c ON c.campground_id = s.campground_id\n" +
+                "JOIN park p ON p.park_id = c.park_id\n" +
+                "WHERE site_id NOT IN ?;";
+
+        SqlRowSet availabilityResults = jdbcTemplate.queryForRowSet(nextsql, currentReservations);
+
+        while (availabilityResults.next()){
+            availableReservations.add(mapRowToReservation(availabilityResults));
+        }
+
+        return availableReservations;
     }
+
+
+
+    private Reservation mapRowToReservation(SqlRowSet rowSet){
+        Reservation reservation = new Reservation();
+
+        reservation.setReservationId(rowSet.getInt("reservation_id"));
+        reservation.setParkId(rowSet.getInt("park_id"));
+        reservation.setCampgroundId(rowSet.getInt("campground_id"));
+        reservation.setSideId(rowSet.getInt("site_id"));
+        reservation.setFromDate(rowSet.getDate("from_date"));
+        reservation.setFromDate(rowSet.getDate("to_date"));
+
+        return reservation;
+    }
+
+
 }
