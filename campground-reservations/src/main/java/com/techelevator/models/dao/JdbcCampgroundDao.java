@@ -33,6 +33,7 @@ public class JdbcCampgroundDao implements CampgroundDao {
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, parkId);
         while (results.next()) {
             campgrounds.add(mapRowToCampground(results));
+
         }
         return campgrounds;
     }

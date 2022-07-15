@@ -28,9 +28,6 @@ public class UserInterface
 
     public static String getHomeScreenSelection(){
 
-        //1) See campsites?
-        //2) View upcooming reservation?
-        //3) View availability across whole park?
 
         System.out.println();
         System.out.println("What do you want to do? ");
@@ -54,6 +51,9 @@ public class UserInterface
     }
 
     public static String displayAllParks(List<Park> parks){
+        System.out.println();
+        System.out.println("Welcome to Team Green National Park Booking Application!");
+        System.out.println();
         int counter = 1;
         for (Park park : parks){
             System.out.println(counter + ") " + park.getName());
@@ -67,15 +67,12 @@ public class UserInterface
 
     public static String getSecondScreenSelection(){
 
-        //1) See campsites?
-        //2) View upcooming reservation?
-        //3) View availability across whole park?
 
         System.out.println();
         System.out.println("What do you want to do? ");
         System.out.println("1) View Campsites and make reservations");
         System.out.println("2) View Upcoming Reservations in the next 30 days");
-        System.out.println("3) View availability across whole park?");
+        System.out.println("3) View availability across whole park");
         System.out.println();
         System.out.println("E) Exit");
         System.out.print("Please make a selection: ");
@@ -263,11 +260,16 @@ public class UserInterface
         System.out.println();
         System.out.println("List of available sites at " + camp.getName());
         System.out.println("------------------------------------");
+
+        if (sitesList.size() == 0) {
+            System.out.println("No sites available at this campground.");
+            return; }
+
         System.out.println("Daily Fee: " + camp.getDailyFee());
         System.out.println("Cost for total stay: " + (camp.getDailyFee().multiply(BigDecimal.valueOf(lengthOfStay))));
         System.out.println();
         for (Site site : sitesList){
-            System.out.println("Site number: " + site.getSiteNumber());
+            System.out.println("Site ID: " + site.getSiteId());
             System.out.println("----------------");
             System.out.print("Maximum Occupancy: " + site.getMaxOccupancy() + "  |  ");
             System.out.print("Maximum Rv Length: " + site.getMaxRvLength() + "  |  ");
@@ -290,5 +292,11 @@ public class UserInterface
         }
         System.out.println("Invalid site ID");
         return 0;
+    }
+
+
+    public static void waitForEnter() {
+        System.out.println("Press enter to continue.");
+        in.nextLine();
     }
 }
