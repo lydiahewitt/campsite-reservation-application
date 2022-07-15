@@ -15,14 +15,11 @@ public class JdbcSiteDao implements SiteDao {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public Site getSitebyID(int siteId){
+    public Site getSiteByID(int siteId){
 
         Site site = null;
-
         String sql = "SELECT * FROM site WHERE site_id = ?";
-
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, siteId);
-
         if(results.next()){
             site = mapRowToSite(results);
         }

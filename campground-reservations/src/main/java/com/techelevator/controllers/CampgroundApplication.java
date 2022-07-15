@@ -3,13 +3,14 @@ package com.techelevator.controllers;
 import com.techelevator.models.dao.*;
 import com.techelevator.models.dto.Campground;
 import com.techelevator.models.dto.Park;
+import com.techelevator.models.dto.Reservation;
 import com.techelevator.views.UserInterface;
 import com.techelevator.models.dao.ReservationDao;
-//import org.graalvm.compiler.lir.LIRInstruction;
 
 import javax.sql.DataSource;
+import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 public class CampgroundApplication
@@ -30,13 +31,13 @@ public class CampgroundApplication
 
     }
 
-    public void run() {
+    public void run() throws ParseException {
 
         List<Park> parks = parkDao.getAllParks();
 
         while (true) {
-            String userChoice = UserInterface.displayAllParks(parks);
 
+            String userChoice = UserInterface.displayAllParks(parks);
             if(userChoice.equalsIgnoreCase("Q")) {
                 break;
             }
@@ -52,7 +53,8 @@ public class CampgroundApplication
                 displayCampDetails(campgroundId);
 
                 //start reservation setup
-                handleReservation(parkId, campgroundId);
+                findReservationsAvailable(parkId, campgroundId);
+                completeReservation();
 
 
             } return;
@@ -74,23 +76,29 @@ public class CampgroundApplication
         return campground;
     }
 
-    private static void handleReservation(int parkId, int campgroundId){
+    private List<Reservation> findReservationsAvailable(int parkId, int campgroundId) {
 
-        String name = UserInterface.getUserName();
+        //get date inputs and convert to Date type
+        LocalDate arrivalDate = UserInterface.getArrivalDate();
+        LocalDate departureDate = UserInterface.getDepartureDate();
 
-        String startString = UserInterface.getStartDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        LocalDate startDate = LocalDate.parse(startString,formatter);
+        if (departureDate.compareTo(arrivalDate) < 0) {
+            System.out.println("Departure date cannot be before your arrival date.");
+        }
 
-        String toString = UserInterface.getToDate();
-        formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        LocalDate toDate = LocalDate.parse(toString,formatter);
-
-       // List<ReservationDao> available = ReservationDao.c
+        List<Reservation> availableReservationsList = reservationDao.createReservation(parkId,
+                campgroundId, arrivalDate, departureDate);
         // LEFT OFF HERE
 
+        return availableReservationsList;
+    }
 
+    private void completeReservation() {
+
+        String customerName = UserInterface.getUserName();
 
     }
+
+
 
 }

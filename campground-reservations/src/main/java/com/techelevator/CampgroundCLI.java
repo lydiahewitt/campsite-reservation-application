@@ -7,12 +7,13 @@ import com.techelevator.models.dao.*;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.awt.*;
+import java.text.ParseException;
 import java.util.Scanner;
 
 public class CampgroundCLI {
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setUrl("jdbc:postgresql://localhost:5432/campground");
 		dataSource.setUsername("postgres");

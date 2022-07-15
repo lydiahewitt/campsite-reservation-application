@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,33 +19,34 @@ public class JdbcReservationDao implements ReservationDao {
     }
 
 
-    public List<Reservation> createReservation(int parkId, int campgroundId, String fromDate, String toDate) {
+    public List<Reservation> createReservation(int parkId, int campgroundId, LocalDate fromDate, LocalDate toDate) {
 
         List<Reservation> currentReservations = new ArrayList<>();
         List<Reservation> availableReservations = new ArrayList<>();
 
-        String sql = "SELECT r.reservation_id, p.park_id, c.campground_id, s.site_id, r.from_date, r.to_date, c.daily_fee\n" +
-                "FROM reservation r\n" +
-                "JOIN site s ON s.site_id = r.site_id\n" +
-                "JOIN campground c ON c.campground_id = s.campground_id\n" +
-                "JOIN park p ON p.park_id = c.park_id\n" +
-                "WHERE p.park_id = ? AND c.campground_id = ?\n" +
-                "  AND ((from_date <= ? AND to_date >= ?) OR (from_date <= ? AND to_date >= ?));";
+        String sql = "SELECT r.reservation_id, p.park_id, c.campground_id, s.site_id, r.from_date, r.to_date, c.daily_fee " +
+                "FROM reservation r " +
+                "JOIN site s ON s.site_id = r.site_id " +
+                "JOIN campground c ON c.campground_id = s.campground_id " +
+                "JOIN park p ON p.park_id = c.park_id " +
+                "WHERE p.park_id = ? AND c.campground_id = ? " +
+                "  AND ((r.from_date <= ? AND r.to_date >= ?) OR (r.from_date <= ? AND r.to_date >= ?)); ";
 
-        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, parkId, campgroundId, fromDate, fromDate, toDate, toDate);
+        SqlRowSet result = jdbcTemplate.queryForRowSet(sql, parkId, campgroundId,
+                fromDate, fromDate, toDate, toDate);
 
         while (result.next()){
             currentReservations.add(mapRowToReservation(result));
         }
 
-        String nextsql = "SELECT r.reservation_id, p.park_id, c.campground_id, s.site_id, r.from_date, r.to_date, c.daily_fee\n" +
-                "FROM reservation r\n" +
-                "JOIN site s ON s.site_id = r.site_id\n" +
-                "JOIN campground c ON c.campground_id = s.campground_id\n" +
-                "JOIN park p ON p.park_id = c.park_id\n" +
-                "WHERE site_id NOT IN ?;";
+        String nextSql = "SELECT r.reservation_id, p.park_id, c.campground_id, s.site_id, r.from_date, r.to_date, c.daily_fee " +
+                "FROM reservation r " +
+                "JOIN site s ON s.site_id = r.site_id " +
+                "JOIN campground c ON c.campground_id = s.campground_id " +
+                "JOIN park p ON p.park_id = c.park_id " +
+                "WHERE site_id NOT IN ?; ";
 
-        SqlRowSet availabilityResults = jdbcTemplate.queryForRowSet(nextsql, currentReservations);
+        SqlRowSet availabilityResults = jdbcTemplate.queryForRowSet(nextSql, currentReservations);
 
         while (availabilityResults.next()){
             availableReservations.add(mapRowToReservation(availabilityResults));

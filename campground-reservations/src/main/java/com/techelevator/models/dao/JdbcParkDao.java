@@ -29,7 +29,8 @@ public class JdbcParkDao implements ParkDao
                     "p.area, " +
                     "p.visitors, " +
                     "p.description " +
-                    "FROM park p ;";
+                    "FROM park p " +
+                    "ORDER BY p.name ;";
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
             while(results.next()) {
                 parks.add(mapRowToPark(results));

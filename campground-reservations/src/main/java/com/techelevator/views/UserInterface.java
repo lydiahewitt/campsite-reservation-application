@@ -4,21 +4,12 @@ import com.techelevator.models.dto.Park;
 import com.techelevator.models.dto.Campground;
 import com.techelevator.models.dto.Reservation;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import java.io.InputStream;
-import java.io.PrintStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
-
-import com.techelevator.models.dao.ParkDao;
-import com.techelevator.models.dao.SiteDao;
-import com.techelevator.models.dao.ReservationDao;
-import com.techelevator.models.dao.CampgroundDao;
-import com.techelevator.models.dao.JdbcParkDao;
-import com.techelevator.models.dao.JdbcSiteDao;
-import com.techelevator.models.dao.JdbcReservationDao;
-import com.techelevator.models.dao.JdbcCampgroundDao;
 
 public class UserInterface
 {
@@ -95,7 +86,7 @@ public class UserInterface
 
     public static String makeReservation() {
         System.out.println();
-        System.out.println("Would you like to make a reservation? (Y/N) ");
+        System.out.println("Would you like to see campgrounds and make a reservation? (Y/N) ");
         Scanner input = new Scanner(System.in);
         String userInput = input.nextLine().trim();
 
@@ -174,26 +165,24 @@ public class UserInterface
         return name;
     }
 
-    public static String getStartDate(){
+    public static LocalDate getArrivalDate(){
         System.out.println();
-        System.out.println("Please enter start date (YYYY-MM-DD): ");
-
-
+        System.out.println("Please enter arrival date (mm/dd/yyyy): ");
         Scanner in = new Scanner(System.in);
-        String date = in.nextLine();
-
-        return date;
+        String arrivalString = in.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        LocalDate arrivalDate = LocalDate.parse(arrivalString, formatter);
+        return arrivalDate;
     }
 
-    public static String getToDate(){
+    public static LocalDate getDepartureDate(){
         System.out.println();
-        System.out.println("Please enter to date (YYYY-MM-DD): ");
-
-
+        System.out.println("Please enter departure date (mm/dd/yyyy): ");
         Scanner in = new Scanner(System.in);
-        String date = in.nextLine();
-
-        return date;
+        String departureString = in.nextLine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        LocalDate departureDate = LocalDate.parse(departureString, formatter);
+        return departureDate;
     }
 
     public static void displayAvailableSites(List<Reservation> reservations){
