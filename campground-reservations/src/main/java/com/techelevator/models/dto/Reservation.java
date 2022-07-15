@@ -4,58 +4,29 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class Reservation {
-    private int reservationId;
-    private int parkId;
     private int campgroundId;
-    private int sideId;
+    private int siteId;
     private Date fromDate;
     private Date toDate;
-    private BigDecimal dailyFee;
 
     public Reservation() {
 
     }
 
-    public Reservation(int reservationId, int parkId, int campgroundId, int sideId, Date fromDate, Date toDate, BigDecimal dailyFee) {
-        this.reservationId = reservationId;
-        this.parkId = parkId;
+    public Reservation(int campgroundId, int siteId, Date fromDate, Date toDate) {
         this.campgroundId = campgroundId;
-        this.sideId = sideId;
+        this.siteId = siteId;
         this.fromDate = fromDate;
         this.toDate = toDate;
-        this.dailyFee = dailyFee;
     }
 
-    public BigDecimal getDailyFee() {
-        return dailyFee;
+
+    public int getSiteId() {
+        return siteId;
     }
 
-    public void setDailyFee(BigDecimal dailyFee) {
-        this.dailyFee = dailyFee;
-    }
-
-    public int getSideId() {
-        return sideId;
-    }
-
-    public void setSideId(int sideId) {
-        this.sideId = sideId;
-    }
-
-    public int getReservationId() {
-        return reservationId;
-    }
-
-    public void setReservationId(int reservationId) {
-        this.reservationId = reservationId;
-    }
-
-    public int getParkId() {
-        return parkId;
-    }
-
-    public void setParkId(int parkId) {
-        this.parkId = parkId;
+    public void setSiteId(int siteId) {
+        this.siteId = siteId;
     }
 
     public int getCampgroundId() {

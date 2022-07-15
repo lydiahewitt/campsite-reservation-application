@@ -4,12 +4,16 @@ import com.techelevator.models.dao.*;
 import com.techelevator.models.dto.Campground;
 import com.techelevator.models.dto.Park;
 import com.techelevator.models.dto.Reservation;
+import com.techelevator.models.dto.Site;
 import com.techelevator.views.UserInterface;
 import com.techelevator.models.dao.ReservationDao;
 
 import javax.sql.DataSource;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +49,15 @@ public class CampgroundApplication
             int parkId = Integer.parseInt(userChoice);
             displayParkDetails(parkId);
             String choice = UserInterface.makeReservation();
+
+            if (choice.equalsIgnoreCase("Y")) {
+                String upcomingChoice = UserInterface.viewUpcomingReservations();
+                if (upcomingChoice.equalsIgnoreCase("Y")) {
+                    List<Reservation> reservationList = reservationDao.getUpcomingReservations(parkId);
+                    UserInterface.displayUpcomingReservations(reservationList);
+                } break;
+            }
+
             if (choice.equalsIgnoreCase("Y")) {
                 List<Campground> campgrounds = campgroundDao.getCampgroundsByParkId(parkId);
                 String chosenCampground = UserInterface.displayAllCampgrounds(campgrounds);
@@ -53,8 +66,7 @@ public class CampgroundApplication
                 displayCampDetails(campgroundId);
 
                 //start reservation setup
-                findReservationsAvailable(parkId, campgroundId);
-                completeReservation();
+                findSitesAvailable(parkId, campgroundId);
 
 
             } return;
@@ -76,27 +88,55 @@ public class CampgroundApplication
         return campground;
     }
 
-    private List<Reservation> findReservationsAvailable(int parkId, int campgroundId) {
-
+    private void findSitesAvailable(int parkId, int campgroundId) {
         //get date inputs and convert to Date type
         LocalDate arrivalDate = UserInterface.getArrivalDate();
         LocalDate departureDate = UserInterface.getDepartureDate();
+        int arrivalMonth = arrivalDate.getMonthValue();
+        int departureMonth = departureDate.getMonthValue();
 
         if (departureDate.compareTo(arrivalDate) < 0) {
             System.out.println("Departure date cannot be before your arrival date.");
         }
 
-        List<Reservation> availableReservationsList = reservationDao.createReservation(parkId,
-                campgroundId, arrivalDate, departureDate);
-        // LEFT OFF HERE
+        Campground campground = campgroundDao.getCampgroundById(campgroundId);
+        List<Site> availableSitesList = siteDao.getListOfSitesAvailable(parkId,
+                campgroundId, arrivalDate, departureDate, arrivalMonth, departureMonth);
 
-        return availableReservationsList;
+        if (availableSitesList.size() == 0) {
+            String userChoice = UserInterface.tryAgain();
+            if (userChoice.equalsIgnoreCase("yes")) {
+                findSitesAvailable(parkId, campgroundId);
+            } else {
+                System.out.println("Hope to see you again soon!");
+                return;
+            }
+        }
+
+        Period period = Period.between(arrivalDate, departureDate);
+        int lengthOfStay = Math.abs(period.getDays());
+
+        UserInterface.displayAvailableSites(availableSitesList, campground, lengthOfStay);
+
+        completeReservation(arrivalDate, departureDate, availableSitesList);
+
+
     }
 
-    private void completeReservation() {
 
+    private void completeReservation(LocalDate arrivalDate, LocalDate departureDate, List<Site> sites) {
+
+        int siteId = UserInterface.getChosenSite(sites);
         String customerName = UserInterface.getUserName();
+        reservationDao.addReservation(siteId, customerName, arrivalDate, departureDate);
+        LocalDate today = LocalDate.now();
+        String todayString = today.toString();
+        LocalTime time = LocalTime.now();
+        String timeString = time.toString();
 
+        String confirmationString = todayString + customerName.charAt(0) + customerName.charAt(customerName.length()-1)
+                + timeString;
+        System.out.println("Here is your confirmation code: " + confirmationString);
     }
 
 

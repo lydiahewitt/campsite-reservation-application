@@ -1,11 +1,15 @@
 package com.techelevator.views;
 
+import com.techelevator.models.dao.JdbcCampgroundDao;
 import com.techelevator.models.dto.Park;
 import com.techelevator.models.dto.Campground;
 import com.techelevator.models.dto.Reservation;
+import com.techelevator.models.dto.Site;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -72,7 +76,9 @@ public class UserInterface
     }
 
     public static String tryAgain() {
-        System.out.println("Would you like to try again? (Y/N)");
+        System.out.println();
+        System.out.println("No reservations available for these dates.");
+        System.out.println("Would you like to enter alternate dates? (Y/N)");
         Scanner input = new Scanner(System.in);
         String userInput = input.nextLine().trim();
 
@@ -94,6 +100,33 @@ public class UserInterface
             return "Y";
         } else {
             return "N";
+        }
+    }
+
+
+    public static String viewUpcomingReservations() {
+        System.out.println();
+        System.out.println("Would you like to see all upcoming reservations in the next 30 days? (Y/N) ");
+        Scanner input = new Scanner(System.in);
+        String userInput = input.nextLine().trim();
+
+        if (userInput.equalsIgnoreCase("Y")) {
+            return "Y";
+        } else {
+            return "N";
+        }
+    }
+
+    public static void displayUpcomingReservations(List<Reservation> reservations) {
+        System.out.println();
+        System.out.println("Upcoming Reservations in the next 30 Days: ");
+        System.out.println("------------------------------------");
+        for (Reservation reservation : reservations) {
+            System.out.print("Site ID: " + reservation.getSiteId() + "  |  ");
+            System.out.print("Campground ID: " + reservation.getCampgroundId() + "  |  ");
+            System.out.print("Arrival Date: " + reservation.getFromDate() + "  |  ");
+            System.out.print("Departure Date: " + reservation.getToDate() + "  |  ");
+            System.out.println();
         }
     }
 
@@ -157,7 +190,7 @@ public class UserInterface
 
     public static String getUserName(){
         System.out.println();
-        System.out.println("Please enter name: ");
+        System.out.println("Please enter a name for the booking: ");
 
         Scanner in = new Scanner(System.in);
         String name = in.nextLine();
@@ -185,13 +218,37 @@ public class UserInterface
         return departureDate;
     }
 
-    public static void displayAvailableSites(List<Reservation> reservations){
+    public static void displayAvailableSites(List<Site> sitesList, Campground camp, int lengthOfStay) {
 
-        for (Reservation reservation: reservations){
+        System.out.println();
+        System.out.println("List of available sites at " + camp.getName());
+        System.out.println("------------------------------------");
+        System.out.println("Daily Fee: " + camp.getDailyFee());
+        System.out.println("Cost for total stay: " + (camp.getDailyFee().multiply(BigDecimal.valueOf(lengthOfStay))));
+        System.out.println();
+        for (Site site : sitesList){
+            System.out.println("Site number: " + site.getSiteNumber());
+            System.out.println("----------------");
+            System.out.print("Maximum Occupancy: " + site.getMaxOccupancy() + "  |  ");
+            System.out.print("Maximum Rv Length: " + site.getMaxRvLength() + "  |  ");
+            System.out.print("Accessible: " + site.isAccessibility() + "  |  ");
+            System.out.print("Utilities: " + site.isUtilities());
             System.out.println();
-            System.out.println("List of available sites");
-            System.out.println("------------------------------------");
             System.out.println();
         }
+    }
+
+    public static int getChosenSite(List<Site> sites) {
+        System.out.println();
+        System.out.println("Please select a site: ");
+        Scanner in = new Scanner(System.in);
+        int chosenSite = Integer.parseInt(in.nextLine());
+        for (Site site : sites) {
+            if (site.getSiteNumber() == chosenSite) {
+                return chosenSite;
+            }
+        }
+        System.out.println("Invalid site ID");
+        return 0;
     }
 }

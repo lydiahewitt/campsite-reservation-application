@@ -49,7 +49,7 @@ public class JdbcCampgroundDao implements CampgroundDao {
                 "c.daily_fee " +
                 "FROM park p\n" +
                 "JOIN campground c on p.park_id = c.park_id\n" +
-                "WHERE p.park_id = ?;";
+                "WHERE c.campground_id = ?;";
 
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, campgroundId);
 
