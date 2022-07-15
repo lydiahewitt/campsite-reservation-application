@@ -42,16 +42,87 @@ public class CampgroundApplication
         while (true) {
 
             String userChoice = UserInterface.displayAllParks(parks);
+
+            //start branching here
+
+            //1) See campsites?
+            //2) View upcooming reservation?
+            //3) View availability across whole park?
+
+
             if(userChoice.equalsIgnoreCase("Q")) {
                 break;
             }
 
             int parkId = Integer.parseInt(userChoice);
             displayParkDetails(parkId);
+
+            //call second homescreen
+            //potential branch
+
+            userChoice = UserInterface.getSecondScreenSelection();
+
+            if(userChoice.equalsIgnoreCase("reserve")){
+                //normal
+
+                    List<Campground> campgrounds = campgroundDao.getCampgroundsByParkId(parkId);
+                    String chosenCampground = UserInterface.displayAllCampgrounds(campgrounds);
+
+                    int campgroundId = Integer.parseInt(chosenCampground);
+                    displayCampDetails(campgroundId);
+
+                    //start reservation setup
+                    findSitesAvailable(parkId, campgroundId);
+
+                return;
+
+
+            } else if (userChoice.equalsIgnoreCase("upcoming")){
+                //vew upcoming
+
+                List<Reservation> reservationList = reservationDao.getUpcomingReservations(parkId);
+                UserInterface.displayUpcomingReservations(reservationList);
+
+                //set up booking
+                String choice = UserInterface.makeReservation();
+
+                if (choice.equalsIgnoreCase("Y")) {
+                    List<Campground> campgrounds = campgroundDao.getCampgroundsByParkId(parkId);
+                    String chosenCampground = UserInterface.displayAllCampgrounds(campgrounds);
+
+                    int campgroundId = Integer.parseInt(chosenCampground);
+                    displayCampDetails(campgroundId);
+
+                    //start reservation setup
+                    findSitesAvailable(parkId, campgroundId);
+
+
+                } return;
+
+            } else if (userChoice.equalsIgnoreCase("wholepark")){
+                // view park
+
+                //request date
+
+                //go through each campground adn show sites
+                List<Campground> campgrounds = campgroundDao.getCampgroundsByParkId(parkId);
+
+
+
+            }else if (userChoice.equalsIgnoreCase("exit")){
+
+                break;
+
+            } else {
+                break;
+            }
+
+
             String choice = UserInterface.makeReservation();
 
             if (choice.equalsIgnoreCase("Y")) {
                 String upcomingChoice = UserInterface.viewUpcomingReservations();
+                //option to view future reservation
                 if (upcomingChoice.equalsIgnoreCase("Y")) {
                     List<Reservation> reservationList = reservationDao.getUpcomingReservations(parkId);
                     UserInterface.displayUpcomingReservations(reservationList);
@@ -122,6 +193,8 @@ public class CampgroundApplication
 
 
     }
+
+
 
 
     private void completeReservation(LocalDate arrivalDate, LocalDate departureDate, List<Site> sites) {

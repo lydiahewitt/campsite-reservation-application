@@ -28,6 +28,10 @@ public class UserInterface
 
     public static String getHomeScreenSelection(){
 
+        //1) See campsites?
+        //2) View upcooming reservation?
+        //3) View availability across whole park?
+
         System.out.println();
         System.out.println("What do you want to do? ");
         System.out.println("1) View Parks");
@@ -60,6 +64,37 @@ public class UserInterface
         System.out.println("Please select a park: ");
         return in.nextLine().trim();
     }
+
+    public static String getSecondScreenSelection(){
+
+        //1) See campsites?
+        //2) View upcooming reservation?
+        //3) View availability across whole park?
+
+        System.out.println();
+        System.out.println("What do you want to do? ");
+        System.out.println("1) View Campsites and make reservations");
+        System.out.println("2) View Upcoming Reservations in the next 30 days");
+        System.out.println("3) View availability across whole park?");
+        System.out.println();
+        System.out.println("E) Exit");
+        System.out.print("Please make a selection: ");
+        String choice = in.nextLine().trim().toLowerCase();
+
+        switch (choice) {
+            case "1":
+                return "reserve";
+            case "2":
+                return "upcoming";
+            case "3":
+                return "wholepark";
+            case "E":
+                return "exit";
+                default:
+                return "invalid";
+        }
+    }
+
 
 
     public static void displayParkDetail(Park park)
@@ -118,15 +153,20 @@ public class UserInterface
     }
 
     public static void displayUpcomingReservations(List<Reservation> reservations) {
-        System.out.println();
-        System.out.println("Upcoming Reservations in the next 30 Days: ");
-        System.out.println("------------------------------------");
-        for (Reservation reservation : reservations) {
-            System.out.print("Site ID: " + reservation.getSiteId() + "  |  ");
-            System.out.print("Campground ID: " + reservation.getCampgroundId() + "  |  ");
-            System.out.print("Arrival Date: " + reservation.getFromDate() + "  |  ");
-            System.out.print("Departure Date: " + reservation.getToDate() + "  |  ");
+
+        if (reservations.size() == 0){
+            System.out.println(":) No upcoming reservations");
+        } else {
             System.out.println();
+            System.out.println("Upcoming Reservations in the next 30 Days: ");
+            System.out.println("------------------------------------");
+            for (Reservation reservation : reservations) {
+                System.out.print("Site ID: " + reservation.getSiteId() + "  |  ");
+                System.out.print("Campground ID: " + reservation.getCampgroundId() + "  |  ");
+                System.out.print("Arrival Date: " + reservation.getFromDate() + "  |  ");
+                System.out.print("Departure Date: " + reservation.getToDate() + "  |  ");
+                System.out.println();
+            }
         }
     }
 
